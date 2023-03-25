@@ -1,2 +1,2 @@
-0 Man
-1 Man and bottle
+0 no mask
+1 mask on

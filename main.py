@@ -4,9 +4,9 @@ import time
 import random
 import simple_ai
 
-AIO_FEED_IDs = ['button1', 'button2']
+AIO_FEED_IDs = ['button1', 'button2', 'button3']
 AIO_USERNAME = 'aaron_24'
-AIO_KEY = 'aio_cXKY25YKRkYbb9eYqyKwEb9xgecZ'
+AIO_KEY = ''
 
 def connect(client):
     print("=> Connected to server")
@@ -42,16 +42,16 @@ while True:
         if sensor_type == 0:
             data = random.randint(15, 60)
             client.publish("sensor1", data)
-            print("=> Updating temperature: " + str(data))
+            print("=> Updating humidity: " + str(data))
             sensor_type = 1
         elif sensor_type == 1:
             data = random.randint(0, 600)
-            print("=> Updating light: " + str(data))
+            print("=> Updating temperature: " + str(data))
             client.publish("sensor2", data)
             sensor_type = 2
-        elif sensor_type == 0:
+        elif sensor_type == 2:
             data = random.randint(0, 100)
-            print("=> Updating humidity: " + str(data))
+            print("=> Updating light: " + str(data))
             client.publish("sensor3", data)
             sensor_type = 0
         count = 10
