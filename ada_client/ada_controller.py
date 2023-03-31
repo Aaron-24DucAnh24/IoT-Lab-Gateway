@@ -13,7 +13,7 @@ class Ada_controller:
         print("=> Connected to server")
         for feed in AIO_FEED_IDs:
             client.subscribe(feed)
-            client.publish(feed+'/get')
+            client.publish(feed + '/get')
 
     @staticmethod
     def subscribe(client , userdata , mid , granted_qos):
@@ -21,12 +21,14 @@ class Ada_controller:
 
     @staticmethod
     def disconnected(client):
-        sys.exit (1)
+        sys.exit(1)
 
     @classmethod
     def message(cls, client , feed_id , payload):
         print("=> Received data " + feed_id + ": " + payload)
+
         cls.set_frequency(feed_id, payload)
+
         Uart_controller.write_serial(feed_id, payload)
         Uart_controller.set_uart_frequency(feed_id, payload)
 
