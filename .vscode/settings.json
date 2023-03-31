@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
+        "Adafruit",
         "baudrate",
+        "MQTT",
         "uart",
         "usbserial",
         "userdata"
