@@ -4,7 +4,7 @@ from uart.uart_controller import *
 
 AIO_FEED_IDs = ['button1', 'button2', 'button3', 'frequency', 'uart_frequency']
 
-class Ada_controller:
+class AdaController:
 
     sensor_frequency = 0
 
@@ -29,8 +29,8 @@ class Ada_controller:
 
         cls.set_frequency(feed_id, payload)
 
-        Uart_controller.write_serial(feed_id, payload)
-        Uart_controller.set_uart_frequency(feed_id, payload)
+        UartController.write_serial(feed_id, payload)
+        UartController.set_uart_frequency(feed_id, payload)
 
     @classmethod
     def set_frequency(cls, feed_id, payload):
@@ -38,23 +38,21 @@ class Ada_controller:
             cls.sensor_frequency = int(payload)
 
     @classmethod
-    def get_sensor_frequency(cls):
-        return cls.sensor_frequency
+    def update_sensor(cls, client, count):
+        if count == cls.sensor_frequency:
+            
+            humidity = UartController.get_humidity()
+            temperature = UartController.get_temperature()
+            light = UartController.get_light()
 
-    @staticmethod
-    def update_sensor(client):
-        humidity = Uart_controller.get_humidity()
-        temperature = Uart_controller.get_temperature()
-        light = Uart_controller.get_light()
+            client.publish("sensor1", humidity)
+            print("=> Updating humidity: " + str(humidity))
 
-        client.publish("sensor1", humidity)
-        print("=> Updating humidity: " + str(humidity))
+            client.publish("sensor2", temperature)
+            print("=> Updating temperature: " + str(temperature))
 
-        client.publish("sensor2", temperature)
-        print("=> Updating temperature: " + str(temperature))
-
-        client.publish("sensor3", light)
-        print("=> Updating light: " + str(light))
+            client.publish("sensor3", light)
+            print("=> Updating light: " + str(light))
 
     @classmethod
     def update_sensor_count(cls, count):

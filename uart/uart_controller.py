@@ -2,23 +2,31 @@
 import serial.tools.list_ports
 import time
 import random
+from exception.exception import *
 
-class Uart_controller:
+def get_serial_port():
+    port_name = ''
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if 'USB Serial' in str(port):
+            port_name = str(port).split(' ')[0]
+    try:
+        serial.Serial(port_name, baudrate=115200)
+        return port_name
+    except:
+        raise InvalidPort(port_name)
+
+port_name = get_serial_port()
+
+class UartController:
     
     # static fields
-    ser = serial.Serial('port', baudrate=115200)
+    ser = serial.Serial(port_name, baudrate=115200)
     mess = ''
     humidity = 0
     temperature = 0
     light = 0
     uart_frequency = 0
-
-    @classmethod
-    def get_serial_port(cls):
-        port = ''
-        # do something with the port
-
-        cls.ser = serial.Serial(port, baudrate=115200)
 
     @classmethod
     def read_serial(cls):
@@ -38,12 +46,9 @@ class Uart_controller:
             cls.ser.write(('l' + message).encode())
 
     @classmethod
-    def get_from_sensor(cls):
-        cls.ser.write('get'.encode())
-
-    @classmethod
-    def get_uart_frequency(cls):
-        return cls.uart_frequency
+    def get_from_sensor(cls, count):
+        if count == cls.uart_frequency:
+            cls.ser.write('get'.encode())
 
     @classmethod
     def set_uart_frequency(cls, id, payload):
@@ -66,7 +71,8 @@ class Uart_controller:
             cls.humidity = data_list[0]
             cls.temperature = data_list[1]
             cls.light = data_list[2]
-            print(data_list)
+
+        print(data_list)
 
     @classmethod
     def get_humidity(cls):

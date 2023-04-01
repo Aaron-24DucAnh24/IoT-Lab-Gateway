@@ -10,19 +10,17 @@ client = getClient()
 sensor_count = 0
 uart_count = 0
 
-Uart_controller.read_serial()
+UartController.read_serial()
 
 while True:
-    sensor_count = Ada_controller.update_sensor_count(sensor_count)
-    uart_count   = Uart_controller.update_uart_count(uart_count)
+    sensor_count = AdaController.update_sensor_count(sensor_count)
+    uart_count   = UartController.update_uart_count(uart_count)
 
-    if uart_count == get_uart_frequency():
-        Uart_controller.get_from_sensor()
+    UartController.get_from_sensor(uart_count)
 
-    if sensor_count == get_sensor_frequency():
-        Ada_controller.update_sensor(client)
-        Ai_controller.update_ai(client)
+    AdaController.update_sensor(client, sensor_count)
+    AiController.update_ai(client, sensor_count)
 
-    Uart_controller.read_serial()
+    UartController.read_serial()
 
     time.sleep(1)

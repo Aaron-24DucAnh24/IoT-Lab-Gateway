@@ -7,10 +7,10 @@ AIO_KEY = ''
 
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 print(client)
-client.on_connect    = Ada_controller.connect
-client.on_disconnect = Ada_controller.disconnected
-client.on_message    = Ada_controller.message
-client.on_subscribe  = Ada_controller.subscribe
+client.on_connect    = AdaController.connect
+client.on_disconnect = AdaController.disconnected
+client.on_message    = AdaController.message
+client.on_subscribe  = AdaController.subscribe
 client.connect()
 client.loop_background()
 
