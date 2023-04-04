@@ -19,6 +19,7 @@ while True:
     UartController.get_from_sensor(uart_count)
 
     AdaController.update_sensor(client, sensor_count)
+
     AiController.update_ai(client, sensor_count)
 
     UartController.read_serial()

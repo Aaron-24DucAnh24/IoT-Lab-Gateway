@@ -1,27 +1,17 @@
 
+from exception.exception import NoConnectionPort
 import serial.tools.list_ports
+from sys import platform
 import time
-import random
-from exception.exception import *
+from uart.port_controller import PortController
 
-def get_serial_port():
-    port_name = ''
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        if 'USB Serial' in str(port):
-            port_name = str(port).split(' ')[0]
-    try:
-        serial.Serial(port_name, baudrate=115200)
-        return port_name
-    except:
-        raise InvalidPort(port_name)
-
-port_name = get_serial_port()
+port_identifier = 'USB Serial' if platform=='darwin' else 'USB-SERIAL'
+PortController.set_serial_port(port_identifier)
 
 class UartController:
     
     # static fields
-    ser = serial.Serial(port_name, baudrate=115200)
+    ser = None
     mess = ''
     humidity = 0
     temperature = 0
@@ -29,7 +19,13 @@ class UartController:
     uart_frequency = 0
 
     @classmethod
+    def check_yolobit_connection(cls):
+        # do something
+        pass
+
+    @classmethod
     def read_serial(cls):
+        cls.check_yolobit_connection()
         bytesToRead = cls.ser.inWaiting()
         if (bytesToRead > 0):
             cls.mess = cls.ser.read(bytesToRead).decode("UTF-8")
@@ -37,6 +33,7 @@ class UartController:
         
     @classmethod
     def write_serial(cls, id, payload):
+        cls.check_yolobit_connection()
         message = str(payload)
         if id == 'button1':
             cls.ser.write(('h' + message).encode())
