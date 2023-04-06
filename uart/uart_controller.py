@@ -60,7 +60,6 @@ class UartController:
     def set_data(cls):
         data_list = []
 
-        # check if mess is available
         if cls.mess: 
             data_list = cls.mess.split('//') 
 

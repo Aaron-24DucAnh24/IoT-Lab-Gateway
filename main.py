@@ -1,6 +1,5 @@
 
 import time
-from ai_module.ai_controller   import *
 from uart.uart_controller      import *
 from ada_client.declaration    import *
 from ada_client.ada_controller import *
@@ -19,8 +18,6 @@ while True:
     UartController.get_from_sensor(uart_count)
 
     AdaController.update_sensor(client, sensor_count)
-
-    AiController.update_ai(client, sensor_count)
 
     UartController.read_serial()
 
