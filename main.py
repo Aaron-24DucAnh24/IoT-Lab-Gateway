@@ -6,19 +6,18 @@ from ada_client.ada_controller import *
 
 client = getClient()
 
-sensor_count = 0
+ada_count = 0
 uart_count = 0
 
-UartController.read_serial()
-
 while True:
-    sensor_count = AdaController.update_sensor_count(sensor_count)
-    uart_count   = UartController.update_uart_count(uart_count)
+    ada_count  = AdaController.update_ada_count(ada_count)
 
-    UartController.get_from_sensor(uart_count)
+    uart_count = UartController.update_uart_count(uart_count)
 
-    AdaController.update_sensor(client, sensor_count)
+    UartController.request_data(uart_count)
 
     UartController.read_serial()
+
+    AdaController.publish_data(client, ada_count)
 
     time.sleep(1)
