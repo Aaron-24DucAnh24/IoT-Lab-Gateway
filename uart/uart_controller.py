@@ -33,38 +33,43 @@ class UartController:
         return True
 
     @classmethod
-    def read_serial(cls):
+    def read_serial(cls, client):
         if cls.check_serial_port():
             bytesToRead = cls.ser.inWaiting()
             if bytesToRead > 0 :
-                cls.mess = cls.ser.read(bytesToRead).decode("UTF-8")
-                cls.set_data()
+                cls.mess = cls.ser.read(bytesToRead).decode()
+                cls.set_data(client)
             else:
-                cls.handle_disconnection('invalid-message')
+                cls.handle_disconnection(client, 'invalid-message')
             
     @classmethod
-    def handle_disconnection(cls, message):
+    def handle_disconnection(cls, client, message):
         global disconnect_count
         if message == 'invalid-message':
             disconnect_count += 1
             if disconnect_count > cls.uart_frequency:
                 cls.yolobit_connection = 0
-                print('=> No connection to Yolobit')
                 disconnect_count = 0
+                note = 'No connection to yolobit'
+                print('=> No connection to Yolobit')
+                client.publish('connection', 'No connection to yolobit')
         else:
             disconnect_count = 0
             cls.yolobit_connection = 1
+            client.publish('button1', '0')
+            client.publish('button2', '0')
+            client.publish('button2', '0')
+            client.publish('connection', 'OKAY')
 
     @classmethod
     def write_serial(cls, id, payload):
-        if cls.check_serial_port():
-            message = str(payload)
-            if id == 'button1':
-                cls.ser.write(('h' + message).encode())
-            if id == 'button2':
-                cls.ser.write(('t' + message).encode())
-            if id == 'button3':
-                cls.ser.write(('l' + message).encode())
+        message = str(payload)
+        if id == 'button1':
+            cls.ser.write(('h' + message).encode())
+        if id == 'button2':
+            cls.ser.write(('t' + message).encode())
+        if id == 'button3':
+            cls.ser.write(('l' + message).encode())
 
     @classmethod
     def request_data(cls, count):
@@ -72,16 +77,15 @@ class UartController:
             cls.ser.write('get'.encode())
 
     @classmethod
-    def set_uart_frequency(cls, id, payload):
-        if id == 'uart_frequency':
-            cls.uart_frequency = int(payload)
+    def set_uart_frequency(cls, payload):
+        cls.uart_frequency = int(payload)
 
     @classmethod
     def update_uart_count(cls, count):
         return count+1 if count < cls.uart_frequency else 0
 
     @classmethod
-    def set_data(cls):
+    def set_data(cls, client):
         data_list = cls.mess.split('//') if cls.mess else []
 
         if len(data_list) == 3:
@@ -89,9 +93,9 @@ class UartController:
             cls.temperature = data_list[1]
             cls.light       = data_list[2]
             print('=> Get data from sensor: ', data_list)
-            cls.handle_disconnection('valid-message')
+            cls.handle_disconnection(client, 'valid-message')
         else:
-            cls.handle_disconnection('invalid-message')
+            cls.handle_disconnection(client, 'invalid-message')
 
     @classmethod
     def get_humidity(cls):

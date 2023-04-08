@@ -1,6 +1,6 @@
 
 import sys
-from uart.uart_controller import *
+from uart.uart_controller import UartController
 
 AIO_FEED_IDs = ['button1', 'button2', 'button3', 'frequency', 'uart_frequency']
 
@@ -29,14 +29,19 @@ class AdaController:
     @classmethod
     def message(cls, client , feed_id , payload):
         print("=> Received data " + feed_id + ": " + payload)
-        cls.set_frequency(feed_id, payload)
-        UartController.write_serial(feed_id, payload)
-        UartController.set_uart_frequency(feed_id, payload)
+        
+        if feed_id == 'frequency':
+            cls.set_frequency(payload)
+
+        elif feed_id == 'uart_frequency':
+            UartController.set_uart_frequency(payload)
+
+        else: 
+            cls.handle_control_device(client, feed_id, payload)
 
     @classmethod
-    def set_frequency(cls, feed_id, payload):
-        if feed_id == 'frequency':
-            cls.ada_frequency = int(payload)
+    def set_frequency(cls, payload):
+        cls.ada_frequency = int(payload)
 
     @classmethod
     def publish_data(cls, client, count):
@@ -65,3 +70,10 @@ class AdaController:
     @classmethod
     def update_ada_count(cls, count):
         return count+1 if count < cls.ada_frequency else 0
+
+    @classmethod
+    def handle_control_device(cls, client, feed_id, payload):
+        if UartController.yolobit_connection:
+            UartController.write_serial(feed_id, payload)
+        elif str(payload) == '1':
+                client.publish(feed_id, '0')

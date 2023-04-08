@@ -16,7 +16,7 @@ while True:
 
     UartController.request_data(uart_count)
 
-    UartController.read_serial()
+    UartController.read_serial(client)
 
     AdaController.publish_data(client, ada_count)
 

@@ -1,6 +1,6 @@
 import time
 from Adafruit_IO import MQTTClient
-from ada_client.ada_controller import *
+from ada_client.ada_controller import AdaController
 
 AIO_USERNAME = 'aaron_24'
 AIO_KEY = ''
