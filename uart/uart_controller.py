@@ -53,14 +53,13 @@ class UartController:
                 cls.yolobit_connection = 0
                 disconnect_count = 0
                 note = 'No connection to yolobit'
-                print('=> No connection to Yolobit')
+                client.publish('button1', '0')
+                client.publish('button2', '0')
+                client.publish('button2', '0')
                 client.publish('connection', 'No connection to yolobit')
         else:
             disconnect_count = 0
             cls.yolobit_connection = 1
-            client.publish('button1', '0')
-            client.publish('button2', '0')
-            client.publish('button2', '0')
             client.publish('connection', 'OKAY')
 
     @classmethod

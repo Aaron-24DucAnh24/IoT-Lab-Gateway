@@ -46,26 +46,42 @@ class AdaController:
     @classmethod
     def publish_data(cls, client, count):
         if count == cls.ada_frequency:
-            
+
+            cls.confirm_connection(client)
+
             humidity    = UartController.get_humidity()
             temperature = UartController.get_temperature()
             light       = UartController.get_light()
 
-            if humidity != cls.pre_humidity:
-                client.publish("sensor1", humidity)
-                print("=> Updating humidity: " + str(humidity))
-
-            if temperature != cls.pre_temperature:
-                client.publish("sensor2", temperature)
-                print("=> Updating temperature: " + str(temperature))
-
-            if light != cls.pre_light:
-                client.publish("sensor3", light)
-                print("=> Updating light: " + str(light))
+            cls.publish_humidity(client, humidity)
+            cls.publish_temperature(client, temperature)
+            cls.publish_light(client, light)
 
             cls.pre_humidity    = humidity
             cls.pre_temperature = temperature
             cls.pre_light       = light
+
+    @staticmethod
+    def confirm_connection(client):
+        client.publish('connection', 'OKAY')
+
+    @classmethod
+    def publish_humidity(cls, client, humidity):
+        if humidity != cls.pre_humidity:
+            client.publish("sensor1", humidity)
+            print("=> Updating humidity: " + str(humidity))
+
+    @classmethod
+    def publish_temperature(cls, client, temperature):
+        if temperature != cls.pre_temperature:
+            client.publish("sensor2", temperature)
+            print("=> Updating temperature: " + str(temperature))
+
+    @classmethod
+    def publish_light(cls, client, light):
+        if light != cls.pre_light:
+            client.publish("sensor3", light)
+            print("=> Updating light: " + str(light))
 
     @classmethod
     def update_ada_count(cls, count):
