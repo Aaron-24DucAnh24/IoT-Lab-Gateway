@@ -40,12 +40,14 @@ class UartController:
                 cls.mess = cls.ser.read(bytesToRead).decode()
                 cls.set_data(client)
             else:
-                cls.handle_disconnection(client, 'invalid-message')
+                cls.handle_disconnection(client, 'fail')
+        else:
+            cls.handle_disconnection(client, 'fail')
             
     @classmethod
     def handle_disconnection(cls, client, message):
         global disconnect_count
-        if message == 'invalid-message':
+        if message == 'fail':
             disconnect_count += 1
             if disconnect_count > cls.uart_frequency:
                 cls.yolobit_connection = 0
@@ -93,9 +95,9 @@ class UartController:
             cls.temperature = data_list[1]
             cls.light       = data_list[2]
             print('=> Get data from sensor: ', data_list)
-            cls.handle_disconnection(client, 'valid-message')
+            cls.handle_disconnection(client, 'ok')
         else:
-            cls.handle_disconnection(client, 'invalid-message')
+            cls.handle_disconnection(client, 'fail')
 
     @classmethod
     def get_humidity(cls):
