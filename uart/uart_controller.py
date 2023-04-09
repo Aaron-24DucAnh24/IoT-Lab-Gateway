@@ -52,7 +52,7 @@ class UartController:
             if disconnect_count > cls.uart_frequency:
                 cls.yolobit_connection = 0
                 disconnect_count = 0
-                note = 'No connection to yolobit'
+                print('=> No connection to yolobit')
                 client.publish('button1', '0')
                 client.publish('button2', '0')
                 client.publish('button2', '0')

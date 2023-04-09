@@ -1,8 +1,8 @@
 
 import time
 from uart.uart_controller      import *
-from ada_client.declaration    import *
-from ada_client.ada_controller import *
+from MQTTClient.declaration    import *
+from MQTTClient.ada_controller import *
 
 client = getClient()
 

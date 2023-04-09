@@ -22,10 +22,6 @@ class AdaController:
     def subscribe(client , userdata , mid , granted_qos):
         print("=> Subscribed to a feed")
 
-    @staticmethod
-    def disconnected(client):
-        sys.exit(1)
-
     @classmethod
     def message(cls, client , feed_id , payload):
         print("=> Received data " + feed_id + ": " + payload)
@@ -63,7 +59,8 @@ class AdaController:
 
     @staticmethod
     def confirm_connection(client):
-        client.publish('connection', 'OKAY')
+        if UartController.yolobit_connection:
+            client.publish('connection', 'OKAY')
 
     @classmethod
     def publish_humidity(cls, client, humidity):
