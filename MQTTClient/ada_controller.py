@@ -45,9 +45,7 @@ class AdaController:
 
             cls.confirm_connection(client)
 
-            humidity    = UartController.get_humidity()
-            temperature = UartController.get_temperature()
-            light       = UartController.get_light()
+            humidity, temperature, light = UartController.get_uart_data()
 
             cls.publish_humidity(client, humidity)
             cls.publish_temperature(client, temperature)
@@ -87,6 +85,5 @@ class AdaController:
     @classmethod
     def handle_control_device(cls, client, feed_id, payload):
         if UartController.yolobit_connection:
-            UartController.write_serial(feed_id, payload)
-        elif str(payload) == '1':
-                client.publish(feed_id, '0')
+            UartController.set_btn(feed_id, payload)
+            UartController.write_serial(feed_id, str(payload))

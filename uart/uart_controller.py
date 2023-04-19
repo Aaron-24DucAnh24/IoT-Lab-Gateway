@@ -11,9 +11,15 @@ class UartController:
     # static fields
     ser = None
     mess = ''
+    
     humidity = 0
     temperature = 0
     light = 0
+
+    light_btn = ""
+    pump_btn = ""
+    fan_btn = ""
+
     uart_frequency = 0
     yolobit_connection = 0
 
@@ -38,7 +44,7 @@ class UartController:
             bytesToRead = cls.ser.inWaiting()
             if bytesToRead > 0 :
                 cls.mess = cls.ser.read(bytesToRead).decode()
-                cls.set_data(client)
+                cls.handle_serial_data(client)
             else:
                 cls.handle_disconnection(client, 'fail')
         else:
@@ -63,8 +69,8 @@ class UartController:
             client.publish('connection', 'OKAY')
 
     @classmethod
-    def write_serial(cls, id, payload):
-        message = str(payload)
+    def write_serial(cls, id, value):
+        message = value
         if id == 'button1':
             cls.ser.write(('h' + message).encode())
         if id == 'button2':
@@ -90,22 +96,40 @@ class UartController:
         data_list = cls.mess.split('//') if cls.mess else []
 
         if len(data_list) == 3:
-            cls.humidity    = data_list[0]
-            cls.temperature = data_list[1]
-            cls.light       = data_list[2]
+            cls.humidity    = int(data_list[0])
+            cls.temperature = int(data_list[1])
+            cls.light       = int(data_list[2])
             print('=> Get data from sensor: ', data_list)
             cls.handle_disconnection(client, 'ok')
         else:
             cls.handle_disconnection(client, 'fail')
 
     @classmethod
-    def get_humidity(cls):
-        return cls.humidity
+    def get_uart_data(cls):
+        return cls.humidity, cls.temperature, cls.light
 
     @classmethod
-    def get_temperature(cls):
-        return cls.temperature
+    def handle_serial_data(cls, client):
+        if len(cls.mess) == 2:
+            cls.handle_btn_feedback(client)
+        else:
+            cls.set_data(client)
 
     @classmethod
-    def get_light(cls):
-        return cls.light
+    def handle_btn_feedback(cls, client):
+        value = mess[-1]
+        if mess[0] == 'p' and cls.pump_btn != value:
+            client.publish('button1', value)
+        elif mess[0] == 'f' and cls.fan_btn != value:
+            client.publish('button2', value)
+        elif mess[0] == 'l' and cls.light_btn != value:
+            client.publish('button3', value)
+
+    @classmethod
+    def set_btn(cls, feed_id, payload):
+        if feed_id == "button1":
+            cls.pump_btn = str(payload)
+        elif feed_id == "button2":
+            cls.fan_btn = str(payload)
+        else:
+            cls.light_btn = str(payload)
