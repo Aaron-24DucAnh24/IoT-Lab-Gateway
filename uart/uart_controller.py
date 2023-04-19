@@ -54,7 +54,7 @@ class UartController:
     def handle_disconnection(cls, client, message):
         global disconnect_count
         if message == 'fail':
-            disconnect_count += 1
+            disconnect_count += 0.5
             if disconnect_count > cls.uart_frequency:
                 cls.yolobit_connection = 0
                 disconnect_count = 0
@@ -89,7 +89,7 @@ class UartController:
 
     @classmethod
     def update_uart_count(cls, count):
-        return count+1 if count < cls.uart_frequency else 0
+        return count+0.5 if count < cls.uart_frequency else 0
 
     @classmethod
     def set_data(cls, client):

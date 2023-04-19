@@ -80,7 +80,7 @@ class AdaController:
 
     @classmethod
     def update_ada_count(cls, count):
-        return count+1 if count < cls.ada_frequency else 0
+        return count+0.5 if count < cls.ada_frequency else 0
 
     @classmethod
     def handle_control_device(cls, client, feed_id, payload):

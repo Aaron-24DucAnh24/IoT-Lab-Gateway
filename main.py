@@ -20,4 +20,4 @@ while True:
 
     AdaController.publish_data(client, ada_count)
 
-    time.sleep(1)
+    time.sleep(0.5)
