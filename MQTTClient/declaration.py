@@ -3,7 +3,7 @@ from Adafruit_IO import MQTTClient
 from MQTTClient.ada_controller import AdaController
 
 AIO_USERNAME = 'aaron_24'
-AIO_KEY = ''
+AIO_KEY = 'aio_fBdw81C4Js6BuNCFcs0QPB8qseeR'
 
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 print(client)
@@ -13,6 +13,6 @@ client.on_subscribe  = AdaController.subscribe
 client.connect()
 client.loop_background()
 
-def getClient() :
+def getMqttClient() :
     time.sleep(3)
     return client

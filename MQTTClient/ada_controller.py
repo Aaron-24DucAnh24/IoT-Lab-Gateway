@@ -1,15 +1,17 @@
 
 import sys
 from uart.uart_controller import UartController
+from AIHelper.ai_helper import AIHelper
 
 AIO_FEED_IDs = ['button1', 'button2', 'button3', 'frequency', 'uart_frequency']
+READ_SERIAL_FREQUENCY = 0.5
 
 class AdaController:
 
     ada_frequency   = 0
-    pre_humidity    = 0
-    pre_light       = 0
-    pre_temperature = 0
+    confirm_connection_frequency = 10  #const
+    auto_mode = 0
+    fre_ai = ""
 
     @staticmethod
     def connect(client):
@@ -41,49 +43,39 @@ class AdaController:
 
     @classmethod
     def publish_data(cls, client, count):
-        if count == cls.ada_frequency:
-
-            cls.confirm_connection(client)
-
+        if count == cls.ada_frequency and UartController.yolobit_connection:
             humidity, temperature, light = UartController.get_uart_data()
-
-            cls.publish_humidity(client, humidity)
-            cls.publish_temperature(client, temperature)
-            cls.publish_light(client, light)
-
-            cls.pre_humidity    = humidity
-            cls.pre_temperature = temperature
-            cls.pre_light       = light
-
-    @staticmethod
-    def confirm_connection(client):
-        if UartController.yolobit_connection:
-            client.publish('connection', 'OKAY')
-
-    @classmethod
-    def publish_humidity(cls, client, humidity):
-        if humidity != cls.pre_humidity:
             client.publish("sensor1", humidity)
-            print("=> Updating humidity: " + str(humidity))
-
-    @classmethod
-    def publish_temperature(cls, client, temperature):
-        if temperature != cls.pre_temperature:
             client.publish("sensor2", temperature)
-            print("=> Updating temperature: " + str(temperature))
+            client.publish("sensor3", light)
+            cls.publish_ai(client)
+            print("=> Updating sensors data to MQTT server")
 
     @classmethod
-    def publish_light(cls, client, light):
-        if light != cls.pre_light:
-            client.publish("sensor3", light)
-            print("=> Updating light: " + str(light))
+    def confirm_connection(cls, client, count):
+        if count==cls.confirm_connection_frequency:
+            client.publish('connection', 'OKAY' if UartController.yolobit_connection else 'No connection to yolobit')
+            return True
+        return False
 
     @classmethod
     def update_ada_count(cls, count):
-        return count+0.5 if count < cls.ada_frequency else 0
+        return count+READ_SERIAL_FREQUENCY if count < cls.ada_frequency else 0
+
+    @classmethod
+    def update_confirm_frequency_count(cls, count):
+        return count+READ_SERIAL_FREQUENCY if count < cls.confirm_connection_frequency else 0
 
     @classmethod
     def handle_control_device(cls, client, feed_id, payload):
         if UartController.yolobit_connection:
             UartController.set_btn(feed_id, payload)
             UartController.write_serial(feed_id, str(payload))
+            
+    @classmethod
+    def publish_ai(cls, client):
+        ai_result = AIHelper.image_detect()
+        if ai_result != cls.fre_ai:
+            client.publish('ai', ai_result)
+            cls.fre_ai = ai_result
+            print('=> Updating AI data to MQTT server')
