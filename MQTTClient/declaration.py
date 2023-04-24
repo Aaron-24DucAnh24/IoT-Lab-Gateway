@@ -1,9 +1,7 @@
 import time
+from ignore import *
 from Adafruit_IO import MQTTClient
 from MQTTClient.ada_controller import AdaController
-
-AIO_USERNAME = 'aaron_24'
-AIO_KEY = ''
 
 client = MQTTClient(AIO_USERNAME , AIO_KEY)
 print(client)
