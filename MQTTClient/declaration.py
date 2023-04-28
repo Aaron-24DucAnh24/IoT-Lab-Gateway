@@ -1,5 +1,5 @@
 import time
-from ignore import *
+from MQTTClient.ignore import *
 from Adafruit_IO import MQTTClient
 from MQTTClient.ada_controller import AdaController
 

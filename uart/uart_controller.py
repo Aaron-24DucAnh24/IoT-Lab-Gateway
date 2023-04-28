@@ -5,7 +5,7 @@ import sys
 
 PORT_IDENTIFIER = 'USB Serial' if sys.platform=='darwin' else 'USB-SERIAL'
 READ_SERIAL_FREQUENCY = 0.5
-SIGNAL_DELAY = 1
+SIGNAL_DELAY = 2
 
 disconnect_count = 0
 
