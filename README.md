@@ -14,7 +14,7 @@
 
 1. Install dependencies:
 ```bash
-    pip3 install -r requirement.txt
+    pip3 install -r requirements.txt
 ```
 
 2. Test gateway
